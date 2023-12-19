@@ -1,8 +1,14 @@
-# vlm_concept
+# Do Vision-Language Pretrained Models Learn Composable Primitive Concepts?
+This repository provides the code for *Do Vision-Language Pretrained Models Learn Composable Primitive Concepts?* published at TMLR (2023).
 
-# This documentation is out-of-date. We will make the edits soon.
+## Table of Contents
+1. [Installation](#installation)
+2. [Data Preparation](#data-preparation)
+3. [Experiments](#experiments)
+4. [How to Cite](#how-to-cite)
 
-# Installation
+
+## Installation
 - Install the necessary packages in `requirements.txt`.
 - Install the CLIP API for computing features and activations. 
     - Note that CLIP requires at least pytorch=1.7.1.
@@ -12,8 +18,7 @@ pip install -r requirements.txt
 pip install git+https://github.com/openai/CLIP.git
 ```
 
-# Data
-
+## Data Preparation
 
 ## MIT States 
 - Download the images, labels, and annotations at http://web.mit.edu/phillipi/Public/states_and_transformations/index.html. Also, download the standard split from TMN.
@@ -58,26 +63,31 @@ mv attributes.txt CUB_200_2011/attributes/attributes.txt
 
 # Experiments
 ## MIT-States
-- Precompute the CLIP features and activations. 
+
+1. Precompute CLIP/ViLT/ALBEF features and activations. 
 
 ```
-python -m mit_states.tmn_precompute_features --data_root ./data/mit_states 
+python -m mit_states.clip_precompute_features --model_name "vit_b_32"
+
+python -m mit_states.vilt_precompute_features
+
+python -m mit_states.albef_precompute_features
 ```
 
-- Run zero-shot experiments for Concept-CLIP Primitive, Composite, and All.
+2. Train CompMap with features from CLIP/ViLT/ALBEF.
 
 ```
-python -m mit_states.concept_cls_adj_noun_zeroshot --data_root ./data/mit_states 
+python -m mit_states.train_retrieval_model.py --model_name "vit_b_32"
 
-python -m mit_states.concept_cls_adj_noun_separate --data_root ./data/mit_states 
+python -m mit_states.train_retrieval_model.py --model_name "vilt"
 
-python -m mit_states.class_cls_zeroshot.py --data_root ./data/mit_states 
-
-python -m mit_states.concept_cls_zeroshot.py --data_root ./data/mit_states 
+python -m mit_states.train_retrieval_model.py --model_name "albef"
 ```
+
 
 ## CUB
-- Precompute the features and activations. 
+
+1. Precompute the features and activations. 
 ```
 mkdir cub_200_2011/saved_activations/
 
@@ -86,21 +96,20 @@ python -m cub_200_2011.precompute_features --data_root ./data/ --output_path cub
 python -m cub_200_2011.precompute_attribute_activations --data_root ./data/ --output_path cub_200_2011/saved_activations/
 ```
 
-- Run zero-shot experiments for Concept-CLIP Primitive, Composite, and All.
-```
-python -m cub_200_2011.concept_cls_zeroshot --data_root ./data/ --split train
-
-python -m cub_200_2011.class_cls_zeroshot --data_root ./data/ --split valid
-```
-
-
-- Run n-way k-shot shot ablation experiments. 
-
+2. Run n-way k-shot shot ablation experiments. 
     - Specify the `n`, `k` for n-way k-shot classification with the arguments `-n` and `-k`. Specify the `--output_path` location of the saved activations from 2. with `--activations_root`.
 
 ```
 python -m cub_200_2011.nway_kshot_cub_clip --data_root ./data/ --activations_root saved_activations/ -n 5 10 50 100 200 -k 1 5 
 ```
 
-## Jupyter Notebooks
-- To train the derivation models and interact with their weights and prediction, please use the jupyter notebooks `cub_200_2011.ipynb`, `cvpr_mit_states_visualization.ipynb`, `tmn_generalizability_mit_states_close_world_logit.ipynb`, and `tmn_mit_states_close_world_logit.ipynb`.
+
+# How to Cite
+```
+@article{yun2023do,
+    title={Do Vision-Language Pretrained Models Learn Composable Primitive Concepts?},
+    author={Tian Yun and Usha Bhalla and Ellie Pavlick and Chen Sun},
+    journal={Transactions on Machine Learning Research},
+    year={2023},
+}
+```

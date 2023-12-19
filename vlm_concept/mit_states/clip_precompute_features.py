@@ -10,7 +10,16 @@ from PIL import Image
 
 from .tmn_mit_states_data import MITStatesDataset
 
+clip_model_dict = {
+    "rn50": "RN50",
+    "rn101": "RN101",
+    "vit_b_32": "ViT-B/32",
+    "vit_l_14_336px": "ViT-L/14@336px",
+    
+}
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 
 def parseArguments(): 
@@ -20,10 +29,13 @@ def parseArguments():
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--report_step", type=int, default=100)
     parser.add_argument("--data_root", type=str, default="./data/mit_states/")
-    parser.add_argument("--exp_name", type=str, default="tmn_precompute_features")
+    parser.add_argument("--model_name", type=str, choices=["rn50","rn101","vit_b_32","vit_l_14_336px"])
     args = parser.parse_args()
-
+    
     # I/O variables
+    parser.add_argument("--exp_name", type=str, default=f"clip_{args.model_name}_precompute_features")
+    args = parser.parse_args()
+    
     parser.add_argument("--output_path", type=str, default=f"./outputs/mit_states/{args.exp_name}")
     args = parser.parse_args()
     return args
@@ -47,7 +59,7 @@ def logging_args(args):
 def main(args):
     # Load the model
     logger.info("Load model...")
-    model, preprocess = clip.load("ViT-B/32", device=device)
+    model, preprocess = clip.load(clip_model_dict[args.model_name], device=device)
 
     # Precompute features for each split
     for split in ["train", "valid", "test"]:
@@ -125,3 +137,4 @@ if __name__ == "__main__":
     logging_args(args)
 
     main(args)
+

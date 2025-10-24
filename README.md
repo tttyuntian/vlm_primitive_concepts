@@ -40,7 +40,7 @@ mv release_dataset/* .
 rename "s/ /_/g" /data/mit_states/images/*
 
 # DOWNLOAD TMN SPLIT
-wget https://www.cs.cmu.edu/~spurushw/publication/compositional/compositional_split_natural.tar.gz
+wget https://senthilpurushwalkam.com/publications/compositional/compositional_split_natural.tar.gz
 tar -xzf compositional_split_natural.tar.gz
 mv mit-states/* .
 ```
